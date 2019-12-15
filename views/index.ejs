@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Yuu App Engine App</title>
+  <link rel="shortcut icon" pan-favicon href="/images/favicon.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="jumbotron m-3">
+    <h1 class="display-4">Login to your app!</h1>
+    <p class="lead">The app was written with the extremely simple nodejs.</p>
+    <hr class="my-4">
+    <p>Use your SNS account to login.</p>
+    <!-- NOTE: iframe will be generated within the span. Added vertical-align as a gap happened under the iframe if html5. -->
+    <span class="yconnectLogin" style="vertical-align: -webkit-baseline-middle;"></span>
+  </div>
+
+  <script type="text/javascript">
+    window.yconnectInit = function () {
+      YAHOO.JP.yconnect.Authorization.init({
+        button: {
+          format: 'image',
+          type: 'a',
+          textType: 'a',
+          width: 260,
+          height: 45,
+          className: 'yconnectLogin'
+        },
+        authorization: {
+          clientId: '<%= cliendId %>',
+          redirectUri: '<%= redirectUri %>',
+          scope: 'openid email profile address',
+          prompt: 'consent',
+          responseType: 'code',
+          state: '<%= state %>',
+          nonce: '<%= nonce %>',
+          windowWidth: '500',
+          windowHeight: '400'
+        },
+        onError: function (res) {
+          console.log('Error occurs', res);
+        },
+        onCancel: function (res) {
+          console.log('Cancelled', res);
+        }
+      });
+    };
+    (function () {
+      var fs = document.getElementsByTagName('script')[0], s = document.createElement('script');
+      s.setAttribute('src', 'https://s.yimg.jp/images/login/yconnect/auth/2.0.1/auth-min.js');
+      fs.parentNode.insertBefore(s, fs);
+    })();
+  </script>
+</body>
+
 </html>
