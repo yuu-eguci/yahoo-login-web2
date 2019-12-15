@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
   if ('code' in req.query && 'state' in req.query && req.query.state == req.session.state) {
     // OK
   } else {
-    next(createError(404, 'Invalid code or invalid state. <a href="/">Try to login again.</a>'))
+    next(createError(404, 'Invalid code or invalid state.'))
     return
   }
 
@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
     if (body.error) {
       console.error('Failed to request access_token.')
       console.table(body)
-      next(createError(404, 'Invalid code. <a href="/">Try to login again.</a>'))
+      next(createError(404, 'Invalid code.'))
       return
     }
 

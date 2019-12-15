@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
   if (req.session.isAuthenticatedUser) {
     // OK
   } else {
-    next(createError(404, 'User is not authenticated. <a href="/">Try to login again.</a>'))
+    next(createError(404, 'User is not authenticated.'))
     return
   }
 
