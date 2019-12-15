@@ -63,3 +63,4 @@ typings/
 # Manually edit
 .vscode
 .DS_Store
+env_variables.yaml
