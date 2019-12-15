@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var request = require('request');
-var createError = require('http-errors');
+var express = require('express')
+var router = express.Router()
+var request = require('request')
+var createError = require('http-errors')
 
 
 // Page that is specified as a redirect destination by Authorization endpoint.
 // Will set the result of login in the session and redirect to mypage.
 router.get('/', function(req, res, next) {
 
-  console.log('inspection access');
-  console.table(req.session);
+  console.log('inspection access')
+  console.table(req.session)
 
   // Check sent state is appropriate for this user.
   if ('code' in req.query && 'state' in req.query && req.query.state == req.session.state) {
     // OK
   } else {
-    next(createError(404, 'Invalid code or invalid state. <a href="/">Try to login again.</a>'));
-    return;
+    next(createError(404, 'Invalid code or invalid state. <a href="/">Try to login again.</a>'))
+    return
   }
 
   // https://auth.login.yahoo.co.jp/yconnect/v2/token
@@ -36,14 +36,14 @@ router.get('/', function(req, res, next) {
 
     // Error handling.
     if (body.error) {
-      console.error('Failed to request access_token.');
-      console.table(body);
-      next(createError(404, 'Invalid code. <a href="/">Try to login again.</a>'));
-      return;
+      console.error('Failed to request access_token.')
+      console.table(body)
+      next(createError(404, 'Invalid code. <a href="/">Try to login again.</a>'))
+      return
     }
 
     // Check id_token later.
-    const idToken = body.id_token;
+    const idToken = body.id_token
 
     // Request userInfo using access_token.
     request.get({
@@ -53,12 +53,12 @@ router.get('/', function(req, res, next) {
       },
       json: true,
     }, (error, response, body) => {
-      console.info('Requested UserInfoApi endpoint');
+      console.info('Requested UserInfoApi endpoint')
 
       // Store userInfo in the session.
       // セッション再生成後に格納します。
       // Will store it after session regeneration.
-      const userInfo = body;
+      const userInfo = body
 
       // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
       // If fails from 6 to 11, ID Token might be altered.
@@ -79,21 +79,21 @@ router.get('/', function(req, res, next) {
       // ID Token check: 14. Check Payload.auth_time.
 
       // Regenerate session.
-      console.info('Regenerate session');
+      console.info('Regenerate session')
       req.session.regenerate((err) => {
         if (err) {
-          console.error(err);
-          next(createError(404, err));
-          return;
+          console.error(err)
+          next(createError(404, err))
+          return
         }
 
         // After coming through the checks, give the user an authenticated flag and access_token.
-        req.session.isAuthenticatedUser = true;
-        req.session.userInfo = userInfo;
-        res.redirect('/mypage');
-      });
-    });
-  });
-});
+        req.session.isAuthenticatedUser = true
+        req.session.userInfo = userInfo
+        res.redirect('/mypage')
+      })
+    })
+  })
+})
 
-module.exports = router;
+module.exports = router
