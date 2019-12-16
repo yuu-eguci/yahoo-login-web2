@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
 
   // Generate state and nonce.
   const state = crypto.randomBytes(11).toString('base64').substring(0, 11)
+  // TODO: Must generate random value.
   const nonce = 'noncenoncenoncenonce'
   req.session.state = state
   req.session.nonce = nonce
