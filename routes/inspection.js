@@ -73,6 +73,7 @@ router.get('/', function(req, res, next) {
     // Will store it after session regeneration.
     const userInfo = body
 
+    // TODO: Implement id token check.
     // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
     // If fails from 6 to 11, ID Token might be altered.
     // If fails from 12 to 14, the authentication has expired.
