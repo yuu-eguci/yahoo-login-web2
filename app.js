@@ -26,7 +26,7 @@ app.enable('trust proxy')
 app.use(session({
   cookie: {
     httpOnly: true,
-    maxAge: 60000,//Number(process.env.SESSION_MAX_AGE_MS),
+    maxAge: Number(process.env.SESSION_MAX_AGE_MS),
   },
   secret: 'keyboard cat',
   resave: false,
