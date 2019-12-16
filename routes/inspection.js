@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const request = require('request')
+const requestPromise = require('request-promise')
 const createError = require('http-errors')
 
 
@@ -15,14 +15,16 @@ router.get('/', function(req, res, next) {
   if ('code' in req.query && 'state' in req.query && req.query.state == req.session.state) {
     // OK
   } else {
-    next(createError(404, 'Invalid code or invalid state.'))
+    console.error('Invalid code or invalid state.')
+    next(createError(404))
     return
   }
 
+  // Request tokens.
   // https://auth.login.yahoo.co.jp/yconnect/v2/token
-  // HACK: Must resolve nested code.
-  request.post({
+  requestPromise({
     url: 'https://auth.login.yahoo.co.jp/yconnect/v2/token',
+    method: 'POST',
     headers: {
       'Authorization': 'Basic ' + Buffer.from(`${process.env.YAHOO_CLIENT_ID}:${process.env.YAHOO_CLIENT_SECRET}`).toString('base64'),
     },
@@ -32,13 +34,15 @@ router.get('/', function(req, res, next) {
       code: req.query.code,
     },
     json: true,
-  }, (error, response, body) => {
+  })
+  .then((body) => {
+    console.info('Requested tokens.')
 
-    // Error handling.
+    // Failed to request tokens.
     if (body.error) {
-      console.error('Failed to request access_token.')
+      console.error('Failed to request tokens.')
       console.table(body)
-      next(createError(404, 'Invalid code.'))
+      next(createError(404))
       return
     }
 
@@ -46,53 +50,67 @@ router.get('/', function(req, res, next) {
     const idToken = body.id_token
 
     // Request userInfo using access_token.
-    request.get({
+    return requestPromise({
       url: 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
+      method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + body.access_token,
       },
       json: true,
-    }, (error, response, body) => {
-      console.info('Requested UserInfoApi endpoint')
-
-      // Store userInfo in the session.
-      // セッション再生成後に格納します。
-      // Will store it after session regeneration.
-      const userInfo = body
-
-      // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
-      // If fails from 6 to 11, ID Token might be altered.
-      // If fails from 12 to 14, the authentication has expired.
-      // ID Token check:  1. Store nonce value.
-      // ID Token check:  2. Divide ID Token into 3 parts.
-      // ID Token check:  3. Decode them.
-      // ID Token check:  4. Get Publick Key.
-      // ID Token check:  5. Get algorism.
-      // ID Token check:  6. Check signature.
-      // ID Token check:  7. Check Payload.iss.
-      // ID Token check:  8. Check Payload.aud.
-      // ID Token check:  9. Check nonce.
-      // ID Token check: 10. Check Payload.at_hash.
-      // ID Token check: 11. Check Payload.c_hash.
-      // ID Token check: 12. Check Payload.exp.
-      // ID Token check: 13. Check Payload.iat.
-      // ID Token check: 14. Check Payload.auth_time.
-
-      // Regenerate session.
-      console.info('Regenerate session')
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error(err)
-          next(createError(404, err))
-          return
-        }
-
-        // After coming through the checks, give the user an authenticated flag and access_token.
-        req.session.isAuthenticatedUser = true
-        req.session.userInfo = userInfo
-        res.redirect('/mypage')
-      })
     })
+  })
+  .then((body) => {
+    console.info('Requested UserInfo.')
+
+    // Failed to request userinfo.
+    if (body.error) {
+      console.error('Failed to request userinfo.')
+      console.table(body)
+      next(createError(404))
+      return
+    }
+
+    // Will store it after session regeneration.
+    const userInfo = body
+
+    // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
+    // If fails from 6 to 11, ID Token might be altered.
+    // If fails from 12 to 14, the authentication has expired.
+    // ID Token check:  1. Store nonce value.
+    // ID Token check:  2. Divide ID Token into 3 parts.
+    // ID Token check:  3. Decode them.
+    // ID Token check:  4. Get Publick Key.
+    // ID Token check:  5. Get algorism.
+    // ID Token check:  6. Check signature.
+    // ID Token check:  7. Check Payload.iss.
+    // ID Token check:  8. Check Payload.aud.
+    // ID Token check:  9. Check nonce.
+    // ID Token check: 10. Check Payload.at_hash.
+    // ID Token check: 11. Check Payload.c_hash.
+    // ID Token check: 12. Check Payload.exp.
+    // ID Token check: 13. Check Payload.iat.
+    // ID Token check: 14. Check Payload.auth_time.
+
+    // Regenerate session.
+    req.session.regenerate((err) => {
+      console.info('Regenerated session')
+
+      if (err) {
+        console.error(err)
+        next(createError(404, err))
+        return
+      }
+
+      // After coming through the checks, give the user an authenticated flag and access_token.
+      req.session.isAuthenticatedUser = true
+      req.session.userInfo = userInfo
+      res.redirect('/mypage')
+    })
+  })
+  .catch((err) => {
+    console.error(err)
+    next(createError(404))
+    return
   })
 })
 
