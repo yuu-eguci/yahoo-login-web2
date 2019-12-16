@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const crypto = require('crypto')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -8,8 +9,7 @@ router.get('/', function(req, res, next) {
   console.table(req.session)
 
   // Generate state and nonce.
-  // TODO: Must be random strings for prod.
-  const state = 'statestatestatestate'
+  const state = crypto.randomBytes(11).toString('base64').substring(0, 11)
   const nonce = 'noncenoncenoncenonce'
   req.session.state = state
   req.session.nonce = nonce
