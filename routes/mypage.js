@@ -1,6 +1,6 @@
-var express = require('express')
-var router = express.Router()
-var createError = require('http-errors')
+const express = require('express')
+const router = express.Router()
+const createError = require('http-errors')
 
 // Page that the user reaches after login process.
 // Only when he is authenticated, displays the page.

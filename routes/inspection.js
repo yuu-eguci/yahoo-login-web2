@@ -1,7 +1,7 @@
-var express = require('express')
-var router = express.Router()
-var request = require('request')
-var createError = require('http-errors')
+const express = require('express')
+const router = express.Router()
+const request = require('request')
+const createError = require('http-errors')
 
 
 // Page that is specified as a redirect destination by Authorization endpoint.
