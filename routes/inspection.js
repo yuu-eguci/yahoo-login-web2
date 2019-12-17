@@ -49,6 +49,12 @@ router.get('/', function(req, res, next) {
     // Check id_token later.
     const idToken = body.id_token
 
+    // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
+    // If fails from 6 to 11, ID Token might be altered.
+    // If fails from 12 to 14, the authentication has expired.
+    // ID Token check:  1. Store nonce value.
+    // Already stored in the session.
+
     // Request userInfo using access_token.
     return requestPromise({
       url: 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
@@ -73,11 +79,7 @@ router.get('/', function(req, res, next) {
     // Will store it after session regeneration.
     const userInfo = body
 
-    // TODO: Implement id token check.
-    // https://developer.yahoo.co.jp/yconnect/v2/id_token.html
-    // If fails from 6 to 11, ID Token might be altered.
-    // If fails from 12 to 14, the authentication has expired.
-    // ID Token check:  1. Store nonce value.
+
     // ID Token check:  2. Divide ID Token into 3 parts.
     // ID Token check:  3. Decode them.
     // ID Token check:  4. Get Publick Key.
