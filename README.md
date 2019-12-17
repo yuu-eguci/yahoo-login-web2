@@ -23,3 +23,9 @@ env_variables:
   YAHOO_CLIENT_SECRET: 'eeeeeeeeeeeeeffffffffffffffffggggggggggg'
   SESSION_MAX_AGE_MS: 60000
 ```
+
+## Illustrate implemented authorization code grant flow
+
+Below.
+
+![](media/media2.png)
