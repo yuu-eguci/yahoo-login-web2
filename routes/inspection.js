@@ -55,6 +55,13 @@ router.get('/', function(req, res, next) {
     // ID Token check:  1. Store nonce value.
     // Already stored in the session.
 
+    // ID Token check:  2. Divide ID Token into 3 parts.
+    // ID Token check:  3. Decode them.
+    const _ = idToken.split('.')
+    const header = Buffer.from(_[0], 'base64').toString()
+    const payload = Buffer.from(_[1], 'base64').toString()
+    const signature = Buffer.from(_[2], 'base64').toString()
+
     // Request userInfo using access_token.
     return requestPromise({
       url: 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
@@ -79,9 +86,6 @@ router.get('/', function(req, res, next) {
     // Will store it after session regeneration.
     const userInfo = body
 
-
-    // ID Token check:  2. Divide ID Token into 3 parts.
-    // ID Token check:  3. Decode them.
     // ID Token check:  4. Get Publick Key.
     // ID Token check:  5. Get algorism.
     // ID Token check:  6. Check signature.
