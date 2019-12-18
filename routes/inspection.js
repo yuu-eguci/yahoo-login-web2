@@ -80,6 +80,9 @@ router.get('/', function(req, res, next) {
   .then((body) => {
     const publicKey = body[req.session._header.kid]
 
+    // ID Token check:  5. Get algorism.
+    // Stored in req.session._header.alg
+
     // Request userInfo using access_token.
     return requestPromise({
       url: 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
@@ -104,7 +107,6 @@ router.get('/', function(req, res, next) {
     // Will store it after session regeneration.
     const userInfo = body
 
-    // ID Token check:  5. Get algorism.
     // ID Token check:  6. Check signature.
     // ID Token check:  7. Check Payload.iss.
     // ID Token check:  8. Check Payload.aud.
