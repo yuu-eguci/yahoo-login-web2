@@ -58,16 +58,34 @@ router.get('/', function(req, res, next) {
     // ID Token check:  2. Divide ID Token into 3 parts.
     // ID Token check:  3. Decode them.
     const _ = idToken.split('.')
-    const header = Buffer.from(_[0], 'base64').toString()
-    const payload = Buffer.from(_[1], 'base64').toString()
+    const header = JSON.parse(Buffer.from(_[0], 'base64').toString())
+    const payload = JSON.parse(Buffer.from(_[1], 'base64').toString())
     const signature = Buffer.from(_[2], 'base64').toString()
+
+    // FIXME: Know that it's so ridiculous to store the value in the session in order to pass it to next THEN.
+    // But this time the way is adopted because
+    // 1. Donno how to do that using request-promise.
+    // 2. This repository is a prototype and it will be rewritten using async and await next time.
+    req.session._access_token = body.access_token
+    req.session._header = header
+    req.session._payload = payload
+    req.session._signature = signature
+
+    // ID Token check:  4. Get Publick Key.
+    return requestPromise({
+      url: 'https://auth.login.yahoo.co.jp/yconnect/v2/public-keys',
+      json: true,
+    })
+  })
+  .then((body) => {
+    const publicKey = body[req.session._header.kid]
 
     // Request userInfo using access_token.
     return requestPromise({
       url: 'https://userinfo.yahooapis.jp/yconnect/v2/attribute',
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + body.access_token,
+        'Authorization': 'Bearer ' + req.session._access_token,
       },
       json: true,
     })
@@ -86,7 +104,6 @@ router.get('/', function(req, res, next) {
     // Will store it after session regeneration.
     const userInfo = body
 
-    // ID Token check:  4. Get Publick Key.
     // ID Token check:  5. Get algorism.
     // ID Token check:  6. Check signature.
     // ID Token check:  7. Check Payload.iss.
