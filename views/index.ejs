@@ -33,15 +33,15 @@
           className: 'yconnectLogin'
         },
         authorization: {
+          responseType: 'code',
           clientId: '<%= cliendId %>',
           redirectUri: '<%= redirectUri %>',
           scope: 'openid email profile address',
-          prompt: 'consent',
-          responseType: 'code',
           state: '<%= state %>',
           nonce: '<%= nonce %>',
+          prompt: 'select_account consent',
           windowWidth: '500',
-          windowHeight: '400'
+          windowHeight: '400',
         },
         onError: function (res) {
           console.log('Error occurs', res);

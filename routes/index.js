@@ -8,6 +8,12 @@ router.get('/', function(req, res, next) {
   console.log('index access')
   console.table(req.session)
 
+  // Redirect logged in user to the mypage.
+  if (req.session.isAuthenticatedUser) {
+    res.redirect('/mypage')
+    return
+  }
+
   // Generate state and nonce.
   const state = crypto.randomBytes(11).toString('base64').substring(0, 11)
   // TODO: Must generate random value.
