@@ -8,6 +8,7 @@ const session = require('express-session')
 const indexRouter = require('./routes/index')
 const inspectionRouter = require('./routes/inspection')
 const mypageRouter = require('./routes/mypage')
+const logoutRouter = require('./routes/logout')
 const testRouter = require('./routes/test')
 
 const app = express()
@@ -36,6 +37,7 @@ app.use(session({
 app.use('/', indexRouter)
 app.use('/inspection', inspectionRouter)
 app.use('/mypage', mypageRouter)
+app.use('/logout', logoutRouter)
 app.use('/test', testRouter)
 
 // catch 404 and forward to error handler
