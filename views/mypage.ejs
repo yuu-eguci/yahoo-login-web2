@@ -12,18 +12,14 @@
 </head>
 
 <body>
-  <div class="m-3">
-    <div class="alert alert-primary" role="alert">
-      <p>
-        Hello <%= userEmail %>!
-      </p>
-      <p>
-        You've successfully logged in!
-      </p>
-      <p>
-        <a href="/logout" class="btn btn-dark btn-lg">Logout</a>
-      </p>
-    </div>
+  <div class="jumbotron m-3">
+    <h1>Welcome to mypage!!</h1>
+    <p class="lead text-muted">
+      Hi <%= userEmail %>! You've successfully logged in. Click buttons below.
+    </p>
+    <p>
+      <a href="/logout" class="btn btn-primary my-2">Log out</a>
+    </p>
   </div>
 </body>
 
