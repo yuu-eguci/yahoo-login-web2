@@ -1,0 +1,21 @@
+# Wires the app to a local mock of the Yahoo endpoints with synthetic credentials.
+# Usage: docker compose -f compose.yaml -f compose.mock.yaml up --build --wait
+services:
+  app:
+    environment:
+      # These override any values in .env, so real credentials are never used with the mock.
+      YAHOO_CLIENT_ID: synthetic-client-id
+      YAHOO_CLIENT_SECRET: synthetic-client-secret
+      YAHOO_AUTH_ORIGIN: http://yahoo-mock:4000
+      YAHOO_USERINFO_ORIGIN: http://yahoo-mock:4000
+      SESSION_MAX_AGE_MS: "60000"
+    depends_on:
+      - yahoo-mock
+
+  yahoo-mock:
+    build:
+      context: .
+      target: test
+    image: yahoo-login-web2:test
+    init: true
+    command: ["node", "test/support/mock-yahoo-main.ts"]

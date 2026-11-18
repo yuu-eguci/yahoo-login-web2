@@ -1,0 +1,13 @@
+# Credentials must never enter the build context.
+.env
+.env.*
+env_variables.yaml
+
+.git
+.github
+node_modules
+media
+*.log
+Dockerfile
+.dockerignore
+compose*.yaml

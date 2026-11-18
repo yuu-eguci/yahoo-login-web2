@@ -26,3 +26,28 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+
+  docker:
+    name: Docker build and mocked login flow
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: compose.yaml:compose.mock.yaml
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build images
+        run: docker compose --profile test build
+      - name: Type check and test in the container
+        run: docker compose run --rm test
+      - name: Start the app with the mock Yahoo endpoints
+        run: docker compose up --wait
+      - name: Smoke-test the mocked login flow
+        run: docker compose run --rm test node test/smoke/mocked-login.ts
+      - name: Check the app from the host
+        run: |
+          curl --fail --silent --show-error http://localhost:3000/ | grep -q "clientId: 'synthetic-client-id'"
+      - name: Show logs
+        if: failure()
+        run: docker compose logs
+      - name: Stop
+        if: always()
+        run: docker compose down
