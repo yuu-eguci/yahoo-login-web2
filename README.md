@@ -7,7 +7,7 @@ A small login authentication sample using Yahoo! ID 連携. Wanted to say "small
 
 ## Run with Docker
 
-Only Docker (with Compose v2) is required; Node.js does not need to be installed on the host.
+Only Docker (Docker Engine 25 or later with Compose v2.24 or later) is required; Node.js does not need to be installed on the host.
 
 1. Create `.env` in the repository root (it is gitignored and excluded from the Docker build context):
 
