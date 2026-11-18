@@ -1,9 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const crypto = require('crypto')
+import crypto from 'node:crypto'
+import { Router } from 'express'
+
+const router = Router()
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res) => {
 
   console.log('index access')
   console.table(req.session)
@@ -29,4 +30,4 @@ router.get('/', function(req, res, next) {
   })
 })
 
-module.exports = router
+export default router

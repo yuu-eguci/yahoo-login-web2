@@ -1,4 +1,4 @@
-runtime: nodejs10
+runtime: nodejs24
 
 includes:
 - env_variables.yaml

@@ -1,25 +1,24 @@
-const express = require('express')
-const router = express.Router()
-const createError = require('http-errors')
+import { Router } from 'express'
+import createError from 'http-errors'
+
+const router = Router()
 
 // Page that the user reaches after login process.
 // Only when he is authenticated, displays the page.
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
 
   console.info('mypage access')
   console.table(req.session)
 
   // Check if the user is authenticated.
-  if (req.session.isAuthenticatedUser) {
-    // OK
-  } else {
+  if (!req.session.isAuthenticatedUser) {
     next(createError(404, 'User is not authenticated.'))
     return
   }
 
   res.render('./mypage.ejs', {
-    userEmail: req.session.userInfo.email,
+    userEmail: req.session.userInfo?.email,
   })
 })
 
-module.exports = router
+export default router
