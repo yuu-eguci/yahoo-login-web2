@@ -75,7 +75,7 @@ router.get('/', async (req, res, next) => {
 
       if (err) {
         console.error(err)
-        next(createError(404, err instanceof Error ? err.message : 'Failed to regenerate session.'))
+        next(err instanceof Error ? createError(404, err) : createError(404))
         return
       }
 

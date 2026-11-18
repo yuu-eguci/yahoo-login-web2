@@ -71,16 +71,6 @@ export interface UserInfo {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-// Fetches JSON and treats both non-2xx statuses and `error` bodies as failures.
-const fetchJson = async (url: string, init?: RequestInit): Promise<Record<string, unknown>> => {
-  const res = await fetch(url, init)
-  const body: unknown = await res.json()
-  if (!res.ok || !isRecord(body) || 'error' in body) {
-    throw new YahooApiError(url, res.status, body)
-  }
-  return body
-}
-
 export class YahooApiError extends Error {
   readonly status: number
   readonly body: unknown
@@ -91,6 +81,16 @@ export class YahooApiError extends Error {
     this.status = status
     this.body = body
   }
+}
+
+// Fetches JSON and treats both non-2xx statuses and `error` bodies as failures.
+const fetchJson = async (url: string, init?: RequestInit): Promise<Record<string, unknown>> => {
+  const res = await fetch(url, init)
+  const body: unknown = await res.json()
+  if (!res.ok || !isRecord(body) || 'error' in body) {
+    throw new YahooApiError(url, res.status, body)
+  }
+  return body
 }
 
 export interface TokenRequest {
