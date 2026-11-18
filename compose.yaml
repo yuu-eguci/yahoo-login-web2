@@ -1,0 +1,34 @@
+name: yahoo-login-web2
+
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    image: yahoo-login-web2:local
+    init: true
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    # YAHOO_CLIENT_ID, YAHOO_CLIENT_SECRET, SESSION_MAX_AGE_MS are read at run time from .env (gitignored).
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # The container port is fixed; use APP_PORT to change the host port.
+      PORT: "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/stylesheets/style.css').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      start_interval: 1s
+      retries: 3
+
+  # Type check and tests: docker compose run --rm --build test
+  test:
+    profiles: [test]
+    build:
+      context: .
+      target: test
+    image: yahoo-login-web2:test
+    init: true
